@@ -1,17 +1,22 @@
-#pragma once
+#ifndef _COLORSHADERCLASS_H_
+#define _COLORSHADERCLASS_H_
 
-//This class is used to invoke HLSL shaders for drawing the 3D models on the GPU
 
-#include<d3d11.h>
-#include<D3DX10math.h>
-#include<D3DX11async.h>
-#include<fstream>
+//////////////
+// INCLUDES //
+//////////////
+#include <d3d11.h>
+#include <d3dx10math.h>
+#include <d3dx11async.h>
+#include <fstream>
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Class name: ColorShaderClass
+////////////////////////////////////////////////////////////////////////////////
 class ColorShaderClass
 {
 private:
-	//Defintion of the cBuffer type that will b used with the vertex shader
-	//It must be the same as in the vs file
 	struct MatrixBufferType
 	{
 		D3DXMATRIX world;
@@ -23,10 +28,6 @@ public:
 	ColorShaderClass();
 	ColorShaderClass(const ColorShaderClass&);
 	~ColorShaderClass();
-
-	//The following functions handle the initializing and shutdown of the shader
-	//the render function sets the shader parameters and then draws the prepared model
-	//vertices along the shader
 
 	bool Initialize(ID3D11Device*, HWND);
 	void Shutdown();
@@ -47,3 +48,4 @@ private:
 	ID3D11Buffer* m_matrixBuffer;
 };
 
+#endif

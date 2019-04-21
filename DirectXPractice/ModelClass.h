@@ -5,7 +5,7 @@
 #include<d3d11.h>
 #include<d3dx10math.h>
 
-#include"TextureClass.h"
+class TextureClass;
 
 class ModelClass
 {
@@ -13,7 +13,8 @@ private:
 	struct VertexType
 	{
 		D3DXVECTOR3 position;
-		D3DXVECTOR2 texture;
+		D3DXVECTOR2 texture; //Used for texel coords
+		//D3DXVECTOR4 color; //Used to print color directly to the model. Not used for textures
 	};
 
 public:

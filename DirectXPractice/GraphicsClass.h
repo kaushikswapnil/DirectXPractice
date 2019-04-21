@@ -16,6 +16,9 @@ namespace GraphicsGlobals
 	const float SCREEN_NEAR = 0.1f;
 }
 
+class ModelClass;
+class ColorShaderClass;
+
 class GraphicsClass
 {
 public:
@@ -36,5 +39,7 @@ private:
 	BitmapClass* m_Bitmap;
 	TextureShaderClass* m_TextureShader;
 	TextClass* m_Text;
+	ModelClass* m_Model;
+	ColorShaderClass* m_ColorShader; //used for color shading
 };
 

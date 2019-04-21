@@ -1,5 +1,6 @@
 #include "ModelClass.h"
-
+#include "TextureClass.h"
+#include "Assertion.h"
 
 
 ModelClass::ModelClass() : m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_indexCount(0), m_vertexCount(0), m_Texture(nullptr)
@@ -61,7 +62,7 @@ int ModelClass::GetIndexCount()
 	return m_indexCount;
 }
 
-ID3D11ShaderResourceView * ModelClass::GetTexture()
+ID3D11ShaderResourceView* ModelClass::GetTexture()
 {
 	return m_Texture->GetTexture();
 }
@@ -99,12 +100,15 @@ bool ModelClass::InitializeBuffers(ID3D11Device *device)
 	// Load the vertex array with data.
 	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
 	vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
+	//vertices[0].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
 	vertices[1].texture = D3DXVECTOR2(0.5f, 0.0f);
+	//vertices[1].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
 	vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
+	//vertices[2].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	//Load index array with data
 	indices[0] = 0; //Bottom left
@@ -190,52 +194,45 @@ void ModelClass::ShutdownBuffers()
 //input assembler in GPU. Once GPU has an active vertex buffer it can then use the shader
 //to render that buffer. This function also defines how those buffers should be drawn
 //(triangles, lines, fans, so on)
-void ModelClass::RenderBuffers(ID3D11DeviceContext *deviceContext)
+void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 {
 	unsigned int stride;
 	unsigned int offset;
 
-	//Set vertex buffer stride and offset
+	// Set vertex buffer stride and offset.
 	stride = sizeof(VertexType);
 	offset = 0;
 
-	//Set the vertex buffer to active in the input assembler so it can be rendered
+	// Set the vertex buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &stride, &offset);
 
-	//Set index buffer to active
+	// Set the index buffer to active in the input assembler so it can be rendered.
 	deviceContext->IASetIndexBuffer(m_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-	//Set the type of primitive that should be rendered from this vertex buffer, in this case, triangle
+	// Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	return;
 }
 
-bool ModelClass::LoadTexture(ID3D11Device *device, WCHAR *fileName)
+bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* fileName)
 {
 	bool result;
 
-	m_Texture = new TextureClass();
-	if (!m_Texture)
-	{
-		return false;
-	}
+	//Create the texture object
+	m_Texture = new TextureClass;
+	HARDASSERT(m_Texture != nullptr, "Could not create texture");
 
 	result = m_Texture->Initialize(device, fileName);
-	if (!result)
-	{
-		return false;
-	}
+	HARDASSERT(result, "Could not initialize texture class");
 
 	return true;
 }
 
 void ModelClass::ReleaseTexture()
 {
-	if (m_Texture)
-	{
-		m_Texture->Shutdown();
-		delete m_Texture;
-		m_Texture = nullptr;
-	}
+	HARDASSERT(m_Texture != nullptr, "Trying to release a non-loaded texture");
+	m_Texture->Shutdown();
+	delete m_Texture;
+	m_Texture = nullptr;
 }

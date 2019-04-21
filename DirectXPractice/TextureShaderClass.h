@@ -39,8 +39,6 @@ private:
 	ID3D11PixelShader* m_pixelShader;
 	ID3D11InputLayout* m_layout;
 	ID3D11Buffer* m_matrixBuffer;
-
-	//This pointer is used to interface with texture shader.
-	ID3D11SamplerState* m_sampleState;
+	ID3D11SamplerState* m_sampleState; //sampler state pointer.This pointer will be used to interface with the texture shader.
 };
 

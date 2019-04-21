@@ -1,8 +1,43 @@
 #include "GraphicsClass.h"
+#include "Assertion.h"
+#include "ModelClass.h"
+#include "ColorShaderClass.h"
+#include "LogSystem.h"
+#include <Assertion.h>
+
+#define RETURN_FALSE_IF_FALSE(condition) \
+do \
+{	\
+	if (!(condition)) \
+	{ \
+		return false; \
+	} \
+} while (false)
+
+#define LOG_IF_FALSE(condition, message) \
+do \
+{	\
+	if (!(condition)) \
+	{ \
+		LOG(message); \
+	} \
+} while (false)
+
+#define LOG_RETURN_IF_FALSE(condition, message) \
+do \
+{	\
+	if (!(condition)) \
+	{ \
+		std::string messageStr(message); \
+		LOG(messageStr); \
+		return false; \
+	} \
+} while (false)
 
 
 
-GraphicsClass::GraphicsClass() : m_D3D(nullptr), m_Camera(nullptr), m_Bitmap(nullptr), m_TextureShader(nullptr), m_Text(nullptr)
+
+GraphicsClass::GraphicsClass() : m_D3D(nullptr), m_Camera(nullptr), m_Bitmap(nullptr), m_TextureShader(nullptr), m_Text(nullptr), m_Model(nullptr), m_ColorShader(nullptr)
 {
 }
 
@@ -63,41 +98,30 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	//Set initial position of camera
-	//m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
 
-	//m_TextureShader = new TextureShaderClass();
-	//if (!m_TextureShader)
-	//{
-	//	return false;
-	//}
+	m_Model = new ModelClass;
+	LOG_RETURN_IF_FALSE(m_Model != nullptr, "Could not create model class");
 
-	//result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize TextureShader Object", L"Error", MB_OK);
-	//	return false;
-	//}
+	//Initialize the model class 
+	result = m_Model->Initialize(m_D3D->GetDevice(), L"staticcharge.dds");
+	HARDASSERT(result, "Could not initialize model class");
 
-	////Create the Bitmap object
-	//m_Bitmap = new BitmapClass();
-	//if (!m_Bitmap)
-	//{
-	//	return false;
-	//}
+	//Create + Initialize texture shader
+	m_TextureShader = new TextureShaderClass;
+	HARDASSERT(m_TextureShader != nullptr, "Could not create texture shader");
 
-	///*result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"gamebg.dds", 256, 256);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize Bitmap Object", L"Error", MB_OK);
-	//	return false;
-	//}*/
-	//result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"galaga_sheet.dds", 24, 24);
-	//if (!result)
-	//{
-	//	MessageBox(hwnd, L"Could not initialize Bitmap Object", L"Error", MB_OK);
-	//	return false;
-	//}
+	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
+	HARDASSERT(result, "Could not initialize texture shader");
 
+	//For color shading
+	////Create the color shader
+	//m_ColorShader = new ColorShaderClass;
+	//LOG_RETURN_IF_FALSE(m_ColorShader != nullptr, "Could not create color shader object");
+
+	//result = m_ColorShader->Initialize(m_D3D->GetDevice(), hwnd);
+	//LOG_RETURN_IF_FALSE(result, "Could not initialize color shader");
+	
 	return true;
 }
 
@@ -108,6 +132,19 @@ void GraphicsClass::Shutdown()
 		m_Text->Shutdown();
 		delete m_Text;
 		m_Text = nullptr;
+	}
+
+	if (m_Model)
+	{
+		m_Model->Shutdown();
+		delete m_Model;
+		m_Model = nullptr;
+	}
+
+	if (m_ColorShader)
+	{
+		delete m_ColorShader;
+		m_ColorShader = nullptr;
 	}
 
 	if (m_TextureShader)
@@ -163,47 +200,51 @@ bool GraphicsClass::Render()
 	// Generate the view matrix based on the camera's position.
 	m_Camera->Render();
 
-	// Get the view, projection, and world matrices from the camera and D3D objects.
+	//Get the world, view, an dprojection matrices from the camera and d3d objects
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
-	m_D3D->GetOrthoMatrix(orthoMatrix);
 
-	// Turn off the Z buffer to begin all 2D rendering.
-	m_D3D->TurnZBufferOff();
+	//Put the model vertex and index bugffers on the graphics pipeline to prepare them for drawing
+	m_Model->Render(m_D3D->GetDeviceContext());
 
-	// Turn on the alpha blending before rendering the text.
-	m_D3D->TurnOnAlphaBlending();
-
-	// Render the text strings.
-	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	//Render the model using the color shader
+	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
 	if (!result)
 	{
 		return false;
 	}
-
-	////Put model vertex and index buffers on graphics pipeline to prepare for drawing
-	//result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 100, 100);
-	//if (!result)
-	//{
-	//	return false;
-	//}
-
-	////Render the model using the color shader
-	//result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
-	//if (!result)
-	//{
-	//	return false;
-	//}
-
-	// Turn off alpha blending after rendering the text.
-	m_D3D->TurnOffAlphaBlending();
-
-	// Turn the Z buffer back on now that all 2D rendering has completed.
-	m_D3D->TurnZBufferOn();
 
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
 
 	return true;
 }
+
+
+//Code for rendering 2d in Render()
+	//2D TEXT RENDERING
+	//// Get the view, projection, and world matrices from the camera and D3D objects.
+	//m_Camera->GetViewMatrix(viewMatrix);
+	//m_D3D->GetWorldMatrix(worldMatrix);
+	//m_D3D->GetProjectionMatrix(projectionMatrix);
+	//m_D3D->GetOrthoMatrix(orthoMatrix);
+
+	//// Turn off the Z buffer to begin all 2D rendering.
+	//m_D3D->TurnZBufferOff();
+
+	//// Turn on the alpha blending before rendering the text.
+	//m_D3D->TurnOnAlphaBlending();
+
+	//// Render the text strings.
+	//result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
+	//if (!result)
+	//{
+	//	return false;
+	//}
+
+	//// Turn off alpha blending after rendering the text.
+	//m_D3D->TurnOffAlphaBlending();
+
+	//// Turn the Z buffer back on now that all 2D rendering has completed.
+	//m_D3D->TurnZBufferOn();

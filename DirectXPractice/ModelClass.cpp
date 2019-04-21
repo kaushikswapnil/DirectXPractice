@@ -78,10 +78,10 @@ bool ModelClass::InitializeBuffers(ID3D11Device *device)
 	HRESULT result;
 
 	//Set the number of vertices in the vertex array
-	m_vertexCount = 3;
+	m_vertexCount = 4;
 
 	//Set number of indices in index array
-	m_indexCount = 3;
+	m_indexCount = 6;
 
 	//create the vertex array
 	vertices = new VertexType[m_vertexCount];
@@ -100,20 +100,41 @@ bool ModelClass::InitializeBuffers(ID3D11Device *device)
 	// Load the vertex array with data.
 	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
 	vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
-	//vertices[0].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
 
-	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	vertices[1].texture = D3DXVECTOR2(0.5f, 0.0f);
-	//vertices[1].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[1].position = D3DXVECTOR3(-1.0f, 1.0f, 0.0f);  // Top left.
+	vertices[1].texture = D3DXVECTOR2(0.0f, 0.0f);
+	
+	vertices[2].position = D3DXVECTOR3(1.0f, 1.0f, 0.0f);  // Top right.
+	vertices[2].texture = D3DXVECTOR2(1.0f, 0.0f);
 
-	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
-	//vertices[2].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
+	vertices[3].texture = D3DXVECTOR2(1.0f, 1.0f);
+	//Triangle
+	//vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
+	//vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
+	////vertices[0].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	//vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
+	//vertices[1].texture = D3DXVECTOR2(0.5f, 0.0f);
+	////vertices[1].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	//vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
+	//vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
+	////vertices[2].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+
+	vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
+	vertices[3].texture = D3DXVECTOR2(1.0f, 1.0f);
 
 	//Load index array with data
+	//Triangle 1
 	indices[0] = 0; //Bottom left
-	indices[1] = 1; //Top Middle
-	indices[2] = 2; //Bottom right
+	indices[1] = 1; //Top left
+	indices[2] = 2; //Top right
+	//Triangle 2
+	indices[3] = 0; //Bottom left
+	indices[4] = 2; //Top right
+	indices[5] = 3; //Bottom right
+
 
 
 	//With the vertex and index array filled out, we can now create the vertex buffer 

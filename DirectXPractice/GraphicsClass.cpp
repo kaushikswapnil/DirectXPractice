@@ -78,33 +78,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	//Initialize a base view matrix with the camera for 2D UI rendering
-	m_Camera->SetPosition(0.0f, 0.0f, -1.0f);
-	m_Camera->Render();
-	m_Camera->GetViewMatrix(baseViewMatrix);
-
-	// Create the text object.
-	m_Text = new TextClass;
-	if (!m_Text)
-	{
-		return false;
-	}
-
-	// Initialize the text object.
-	result = m_Text->Initialize(m_D3D->GetDevice(), m_D3D->GetDeviceContext(), hwnd, screenWidth, screenHeight, baseViewMatrix);
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the text object.", L"Error", MB_OK);
-		return false;
-	}
-
-	//Set initial position of camera
 	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
 
 	m_Model = new ModelClass;
 	LOG_RETURN_IF_FALSE(m_Model != nullptr, "Could not create model class");
 
 	//Initialize the model class 
-	result = m_Model->Initialize(m_D3D->GetDevice(), L"staticcharge.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), L"flowers.dds");
 	HARDASSERT(result, "Could not initialize model class");
 
 	//Create + Initialize texture shader

@@ -112,5 +112,8 @@
     <ClInclude Include="LightShaderClass.h">
       <Filter>Source Files\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="LightClass.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

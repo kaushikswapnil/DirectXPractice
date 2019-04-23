@@ -17,7 +17,8 @@ namespace GraphicsGlobals
 }
 
 class ModelClass;
-class ColorShaderClass;
+class LightShaderClass;
+class LightClass;
 
 class GraphicsClass
 {
@@ -31,15 +32,18 @@ public:
 	bool Frame();
 
 private:
-	bool Render();
+	bool Render(const float rotation);
 
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
-	BitmapClass* m_Bitmap;
-	TextureShaderClass* m_TextureShader;
-	TextClass* m_Text;
 	ModelClass* m_Model;
-	ColorShaderClass* m_ColorShader; //used for color shading
+
+	LightShaderClass* m_LightShader;
+	LightClass* m_Light;
+	//BitmapClass* m_Bitmap;
+	//TextureShaderClass* m_TextureShader;
+	//TextClass* m_Text;
+	//ColorShaderClass* m_ColorShader; //used for color shading
 };
 

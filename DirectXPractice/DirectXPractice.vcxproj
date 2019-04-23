@@ -45,6 +45,7 @@
     <ClInclude Include="GraphicsClass.h" />
     <ClInclude Include="InputClass.h" />
     <ClInclude Include="IShaderClass.h" />
+    <ClInclude Include="LightClass.h" />
     <ClInclude Include="LightShaderClass.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="PuruGameSystem.h" />

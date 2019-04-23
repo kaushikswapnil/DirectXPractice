@@ -1,5 +1,8 @@
 #pragma once
 #include "IShaderClass.h"
+#include <d3d11.h>
+#include <d3dx10math.h>
+#include <d3dx11async.h>
 
 class LightShaderClass :
     public IShaderClass
@@ -11,16 +14,23 @@ public:
 
     bool Initialize(ID3D11Device* device, HWND hwnd);
     void Shutdown();
-    bool Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR3 diffuseColor);
+    bool Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor);
 
 private:
     bool InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* vsFileName, WCHAR* psFileName);
     void ShutdownShader();
     void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFileName);
-    bool SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR3 diffuseColor);
+    bool SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor);
     void RenderShader(ID3D11DeviceContext* deviceContext, int indexCount);
 
 protected:
+	struct MatrixBufferType
+	{
+		D3DXMATRIX world;
+		D3DXMATRIX view;
+		D3DXMATRIX projection;
+	};
+
     struct LightBufferType
     {
         D3DXVECTOR4 diffuseColor;

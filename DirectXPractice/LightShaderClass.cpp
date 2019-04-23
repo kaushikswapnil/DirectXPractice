@@ -1,24 +1,12 @@
 #include "LightShaderClass.h"
 #include "Assertion.h"
-#include <d3dcommon.h>
-#include <d3d11.h>
-#include <D3DX11async.h>
 #include <fstream>
-
-
-LightShaderClass::LightShaderClass()
-{
-}
-
-
-LightShaderClass::~LightShaderClass()
-{
-}
 
 bool LightShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
     bool result = InitializeShader(device, hwnd, L"light.vs", L"light.ps");
     HARDASSERT(result, "Could not initialize shader");
+	return result;
 }
 
 void LightShaderClass::Shutdown()
@@ -26,7 +14,7 @@ void LightShaderClass::Shutdown()
     ShutdownShader();
 }
 
-bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR3 diffuseColor)
+bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
 {
     bool result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, diffuseColor);
     HARDASSERT(result, "Unable to set shader parameters");
@@ -68,7 +56,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     }
 
     //Compile the pixel shader code
-    result = D3DX11CompileFromFile(vsFileName, NULL, NULL, "LightPixelShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
+    result = D3DX11CompileFromFile(psFileName, NULL, NULL, "LightPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
 
     if (FAILED(result))
     {
@@ -95,7 +83,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 
     //Create the vertex input layout description
     //This setup must match the VertexType described in Model, and in the shader
-    polygonLayout[0].SemanticName = "Position";
+    polygonLayout[0].SemanticName = "POSITION";
     polygonLayout[0].SemanticIndex = 0;
     polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
     polygonLayout[0].InputSlot = 0;
@@ -111,13 +99,13 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
     polygonLayout[1].InstanceDataStepRate = 0;
 
-    polygonLayout[1].SemanticName = "NORMAL";
-    polygonLayout[1].SemanticIndex = 0;
-    polygonLayout[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-    polygonLayout[1].InputSlot = 0;
-    polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
-    polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-    polygonLayout[1].InstanceDataStepRate = 0;
+    polygonLayout[2].SemanticName = "NORMAL";
+    polygonLayout[2].SemanticIndex = 0;
+    polygonLayout[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+    polygonLayout[2].InputSlot = 0;
+    polygonLayout[2].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+    polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    polygonLayout[2].InstanceDataStepRate = 0;
 
     // Get a count of the elements in the layout.
     numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
@@ -131,7 +119,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
     vertexShaderBuffer = pixelShaderBuffer = nullptr;
 
     //Create a texture sampler state
-    samplerDesc.Filter = D3D11_FILTER_MAXIMUM_MIN_MAG_MIP_LINEAR;
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
     samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -239,7 +227,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
     return;
 }
 
-bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR3 diffuseColor)
+bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
 {
     HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;

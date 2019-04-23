@@ -4,6 +4,8 @@
 #include "ColorShaderClass.h"
 #include "LogSystem.h"
 #include <Assertion.h>
+#include "LightShaderClass.h"
+#include "LightClass.h"
 
 #define RETURN_FALSE_IF_FALSE(condition) \
 do \
@@ -37,7 +39,7 @@ do \
 
 
 
-GraphicsClass::GraphicsClass() : m_D3D(nullptr), m_Camera(nullptr), m_Bitmap(nullptr), m_TextureShader(nullptr), m_Text(nullptr), m_Model(nullptr), m_ColorShader(nullptr)
+GraphicsClass::GraphicsClass() : m_D3D(nullptr), m_Camera(nullptr), m_Model(nullptr), m_LightShader(nullptr), m_Light(nullptr) //m_TextureShader(nullptr), m_Text(nullptr), m_Model(nullptr), m_ColorShader(nullptr)
 {
 }
 
@@ -87,13 +89,25 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	result = m_Model->Initialize(m_D3D->GetDevice(), L"flowers.dds");
 	HARDASSERT(result, "Could not initialize model class");
 
+	//Create the light shader
+	m_LightShader = new LightShaderClass();
+	HARDASSERT(m_LightShader != nullptr, "Unable to create Light Shader");
+
+	result = m_LightShader->Initialize(m_D3D->GetDevice(), hwnd);
+	HARDASSERT(result, "Unable to initialize light shader");
+
+	m_Light = new LightClass();
+	HARDASSERT(m_Light != nullptr, "Unable to create light");
+	m_Light->SetDiffuseColor(1.0f, 0.0f, 1.0f, 1.0f);
+	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+
 	//Create + Initialize texture shader
-	m_TextureShader = new TextureShaderClass;
+	/*m_TextureShader = new TextureShaderClass;
 	HARDASSERT(m_TextureShader != nullptr, "Could not create texture shader");
 
 	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hwnd);
 	HARDASSERT(result, "Could not initialize texture shader");
-
+*/
 	//For color shading
 	////Create the color shader
 	//m_ColorShader = new ColorShaderClass;
@@ -107,38 +121,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void GraphicsClass::Shutdown()
 {
-	if (m_Text)
-	{
-		m_Text->Shutdown();
-		delete m_Text;
-		m_Text = nullptr;
-	}
-
 	if (m_Model)
 	{
 		m_Model->Shutdown();
 		delete m_Model;
 		m_Model = nullptr;
-	}
-
-	if (m_ColorShader)
-	{
-		delete m_ColorShader;
-		m_ColorShader = nullptr;
-	}
-
-	if (m_TextureShader)
-	{
-		m_TextureShader->Shutdown();
-		delete m_TextureShader;;
-		m_TextureShader = nullptr;
-	}
-	
-	if (m_Bitmap)
-	{
-		m_Bitmap->Shutdown();
-		delete m_Bitmap;
-		m_Bitmap = nullptr;
 	}
 
 	if (m_Camera)
@@ -152,14 +139,34 @@ void GraphicsClass::Shutdown()
 		delete m_D3D;
 		m_D3D = nullptr;
 	}
+
+	if (m_Light)
+	{
+		delete m_Light;
+		m_Light = nullptr;
+	}
+
+	if (m_LightShader)
+	{
+		delete m_LightShader;
+		m_LightShader = nullptr;
+	}
 }
 
 bool GraphicsClass::Frame()
 {
 	bool result;
 
+	static float angleOfRotation = 0.0f;
+
+	angleOfRotation += (float)D3DX_PI * 0.01f;
+	if (angleOfRotation > 360.0f)
+	{
+		angleOfRotation = 0.0f;
+	}
+
 	//Render the graphics scene
-	result = Render();
+	result = Render(angleOfRotation);
 	if (!result)
 	{
 		return false;
@@ -168,7 +175,7 @@ bool GraphicsClass::Frame()
 	return true;
 }
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(const float angleOfRotation)
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	bool result;
@@ -185,11 +192,20 @@ bool GraphicsClass::Render()
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
+	//Rotate the world matrix by the rotation value so that the shape wil spin
+	D3DXMatrixRotationY(&worldMatrix, angleOfRotation);
+
 	//Put the model vertex and index bugffers on the graphics pipeline to prepare them for drawing
 	m_Model->Render(m_D3D->GetDeviceContext());
 
 	//Render the model using the color shader
-	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture());
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), 
+								m_Model->GetIndexCount(), 
+								worldMatrix, 
+								viewMatrix, 
+								projectionMatrix, 
+								m_Model->GetTexture(),
+								m_Light->GetDirection(), m_Light->GetDiffuseColor());
 	if (!result)
 	{
 		return false;

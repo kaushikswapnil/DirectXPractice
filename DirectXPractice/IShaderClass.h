@@ -8,7 +8,6 @@ public:
     virtual ~IShaderClass() = default;
     IShaderClass(const IShaderClass& other) = delete;
 
-
 protected:
     struct MatrixBufferType
     {

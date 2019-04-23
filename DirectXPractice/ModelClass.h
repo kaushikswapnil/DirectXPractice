@@ -14,6 +14,9 @@ private:
 	{
 		D3DXVECTOR3 position;
 		D3DXVECTOR2 texture; //Used for texel coords
+		D3DXVECTOR3 normal;
+
+		//Old variables
 		//D3DXVECTOR4 color; //Used to print color directly to the model. Not used for textures
 	};
 

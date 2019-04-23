@@ -251,5 +251,68 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
     D3DXMatrixTranspose(&worldMatrix, &worldMatrix);
     D3DXMatrixTranspose(&viewMatrix, &viewMatrix);
     D3DXMatrixTranspose(&projectionMatrix, &projectionMatrix);
+
+	//Lock the constant buffer so it can be written to
+	result = deviceContext->Map(m_MatrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	HARDASSERT(!FAILED(result), "Unable to map the matrix buffer");
+
+	//Get a ptr to the data in the constant buffer
+	matrixBufferDataPtr = (MatrixBufferType*)mappedResource.pData;
+
+	//copy the matrices into the constant buffer
+	matrixBufferDataPtr->world = worldMatrix;
+	matrixBufferDataPtr->view = viewMatrix;
+	matrixBufferDataPtr->projection = projectionMatrix;
+
+	//Unlock the constant buffer
+	deviceContext->Unmap(m_MatrixBuffer, 0);
+
+	//Set the position of the constant buffer in the vertex shader
+	bufferNumber = 0;
+
+	//Now set the constant buffer in the vertex shader with the updated values
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_MatrixBuffer);
+
+	//Set the shader texture resource in the pixel shader
+	deviceContext->PSSetShaderResources(0, 1, &texture);
+
+	//Lock the light constant buffer
+	result = deviceContext->Map(m_LightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	HARDASSERT(!FAILED(result), "Unable the map the light buffer");
+
+	//Get a ptr to the data in the constant buffer
+	lightBufferDataPtr = (LightBufferType*)mappedResource.pData;
+
+	//Copy the lighting variables into the constant buffer
+	lightBufferDataPtr->diffuseColor = diffuseColor;
+	lightBufferDataPtr->lightDirection = lightDirection;
+	lightBufferDataPtr->padding = 0.0f;
+
+	//Unlock the constant buffer
+	deviceContext->Unmap(m_LightBuffer, 0);
+
+	//Set the position of the light constant buffer in the pixel shader
+	bufferNumber = 0;
+
+	//Set the light constant buffer in the pixel shader with updated values
+	deviceContext->PSSetConstantBuffers(bufferNumber, 1, &m_LightBuffer);
+
+	return true;
+}
+
+void LightShaderClass::RenderShader(ID3D11DeviceContext* deviceContext, int indexCount)
+{
+	//Set the vertex input layout
+	deviceContext->IASetInputLayout(m_Layout);
+
+	//Set the vertex and pixel shaders that will be used to render this triangle
+	deviceContext->VSSetShader(m_VertexShader, NULL, 0);
+	deviceContext->PSSetShader(m_PixelShader, NULL, 0);
+
+	//Set the sampler state in the pixel shader
+	deviceContext->PSSetSamplers(0, 1, &m_SampleState);
+
+	//Render the triangle
+	deviceContext->DrawIndexed(indexCount, 0, 0);
 }
 

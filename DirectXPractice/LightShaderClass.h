@@ -18,7 +18,7 @@ private:
     void ShutdownShader();
     void OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, WCHAR* shaderFileName);
     bool SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR3 diffuseColor);
-    void RenderShader(ID3D11DeviceContext*, int);
+    void RenderShader(ID3D11DeviceContext* deviceContext, int indexCount);
 
 protected:
     struct LightBufferType

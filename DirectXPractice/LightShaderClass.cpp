@@ -14,9 +14,9 @@ void LightShaderClass::Shutdown()
     ShutdownShader();
 }
 
-bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
+bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, const D3DXVECTOR3& lightDirection, const D3DXVECTOR4& ambientColor, const D3DXVECTOR4& diffuseColor)
 {
-    bool result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, diffuseColor);
+    bool result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, texture, lightDirection, ambientColor, diffuseColor);
     HARDASSERT(result, "Unable to set shader parameters");
 
     RenderShader(deviceContext, indexCount);
@@ -227,7 +227,7 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
     return;
 }
 
-bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
+bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, const D3DXVECTOR3& lightDirection, const D3DXVECTOR4& ambientColor, const D3DXVECTOR4& diffuseColor)
 {
     HRESULT result;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -272,6 +272,7 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	lightBufferDataPtr = (LightBufferType*)mappedResource.pData;
 
 	//Copy the lighting variables into the constant buffer
+    lightBufferDataPtr->ambientColor = ambientColor;
 	lightBufferDataPtr->diffuseColor = diffuseColor;
 	lightBufferDataPtr->lightDirection = lightDirection;
 	lightBufferDataPtr->padding = 0.0f;

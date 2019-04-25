@@ -98,6 +98,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_Light = new LightClass();
 	HARDASSERT(m_Light != nullptr, "Unable to create light");
+    m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 
@@ -205,7 +206,9 @@ bool GraphicsClass::Render(const float angleOfRotation)
 								viewMatrix, 
 								projectionMatrix, 
 								m_Model->GetTexture(),
-								m_Light->GetDirection(), m_Light->GetDiffuseColor());
+								m_Light->GetDirection(),
+                                m_Light->GetAmbientColor(),
+                                m_Light->GetDiffuseColor());
 	if (!result)
 	{
 		return false;

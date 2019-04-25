@@ -1,9 +1,9 @@
 #include "ModelClass.h"
 #include "TextureClass.h"
 #include "Assertion.h"
+#include <fstream>
 
-
-ModelClass::ModelClass() : m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_indexCount(0), m_vertexCount(0), m_Texture(nullptr)
+ModelClass::ModelClass() : m_vertexBuffer(nullptr), m_indexBuffer(nullptr), m_IndexCount(0), m_VertexCount(0), m_Texture(nullptr), m_ModelData()
 {
 }
 
@@ -16,9 +16,12 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device *device, WCHAR* textureFileName)
+bool ModelClass::Initialize(ID3D11Device *device, const char* modelFileName, const WCHAR* textureFileName)
 {
 	bool result;
+
+	result = LoadModel(modelFileName);
+	HARDASSERT(result, "Unable to load the model data file");
 
 	//Initialize the vertex and index buffer that hold geometry
 	result = InitializeBuffers(device);
@@ -59,7 +62,7 @@ void ModelClass::Render(ID3D11DeviceContext * deviceContext)
 
 int ModelClass::GetIndexCount()
 {
-	return m_indexCount;
+	return m_IndexCount;
 }
 
 ID3D11ShaderResourceView* ModelClass::GetTexture()
@@ -77,68 +80,29 @@ bool ModelClass::InitializeBuffers(ID3D11Device *device)
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT result;
 
-	//Set the number of vertices in the vertex array
-	m_vertexCount = 4;
-
-	//Set number of indices in index array
-	m_indexCount = 6;
-
 	//create the vertex array
-	vertices = new VertexType[m_vertexCount];
+	vertices = new VertexType[m_VertexCount];
 	if (!vertices)
 	{
 		return false;
 	}
 
 	//Create the index array
-	indices = new unsigned long[m_indexCount];
+	indices = new unsigned long[m_IndexCount];
 	if (!indices)
 	{
 		return false;
 	}
 
 	// Load the vertex array with data.
-	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
-	vertices[0].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	for (unsigned int iter = 0; iter < m_IndexCount; ++iter)
+	{
+		vertices[iter].position = D3DXVECTOR3(m_ModelData[iter].x, m_ModelData[iter].y, m_ModelData[iter].z);
+		vertices[iter].texture = D3DXVECTOR2(m_ModelData[iter].tu, m_ModelData[iter].tv);
+		vertices[iter].normal = D3DXVECTOR3(m_ModelData[iter].nx, m_ModelData[iter].ny, m_ModelData[iter].nz);
 
-	vertices[1].position = D3DXVECTOR3(-1.0f, 1.0f, 0.0f);  // Top left.
-	vertices[1].texture = D3DXVECTOR2(0.0f, 0.0f);
-	vertices[1].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	
-	vertices[2].position = D3DXVECTOR3(1.0f, 1.0f, 0.0f);  // Top right.
-	vertices[2].texture = D3DXVECTOR2(1.0f, 0.0f);
-	vertices[2].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-
-	vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	vertices[3].texture = D3DXVECTOR2(1.0f, 1.0f);
-	vertices[3].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-	//Triangle
-	//vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);  // Bottom left.
-	//vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
-	////vertices[0].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	//vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f);  // Top middle.
-	//vertices[1].texture = D3DXVECTOR2(0.5f, 0.0f);
-	////vertices[1].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	//vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	//vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
-	////vertices[2].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
-
-	vertices[3].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);  // Bottom right.
-	vertices[3].texture = D3DXVECTOR2(1.0f, 1.0f);
-
-	//Load index array with data
-	//Triangle 1
-	indices[0] = 0; //Bottom left
-	indices[1] = 1; //Top left
-	indices[2] = 2; //Top right
-	//Triangle 2
-	indices[3] = 0; //Bottom left
-	indices[4] = 2; //Top right
-	indices[5] = 3; //Bottom right
-
+		indices[iter] = iter;
+	}
 
 
 	//With the vertex and index array filled out, we can now create the vertex buffer 
@@ -149,7 +113,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device *device)
 
 	//Set up the desc of the static vertex buffer
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_vertexCount;
+	vertexBufferDesc.ByteWidth = sizeof(VertexType) * m_VertexCount;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vertexBufferDesc.CPUAccessFlags = 0;
 	vertexBufferDesc.MiscFlags = 0;
@@ -169,7 +133,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device *device)
 
 	//Set up the description of the static index buffer
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_indexCount;
+	indexBufferDesc.ByteWidth = sizeof(unsigned long) * m_IndexCount;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.MiscFlags = 0;
@@ -240,7 +204,7 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 	return;
 }
 
-bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* fileName)
+bool ModelClass::LoadTexture(ID3D11Device* device, const WCHAR* fileName)
 {
 	bool result;
 
@@ -260,4 +224,45 @@ void ModelClass::ReleaseTexture()
 	m_Texture->Shutdown();
 	delete m_Texture;
 	m_Texture = nullptr;
+}
+
+bool ModelClass::LoadModel(const char* filename)
+{
+	char input;
+	std::ifstream modelDataFile(filename);
+	HARDASSERT(!(modelDataFile.fail()), "Could not open model file");
+
+	//Try to fetch the vertex buffer count
+	do 
+	{
+		modelDataFile.get(input);
+	} while (input != ':');
+
+	modelDataFile >> m_VertexCount;
+
+	m_IndexCount = m_VertexCount;
+
+	do 
+	{
+		modelDataFile.get(input);
+	} while (input != ':');
+
+	modelDataFile.get(input);
+	modelDataFile.get(input);
+
+	//Pre allocate data for vertex
+	m_ModelData.reserve(m_VertexCount);
+
+	for (unsigned int iter = 0; iter < m_VertexCount; ++iter)
+	{
+		ModelType vertexData;
+		modelDataFile >> vertexData.x >> vertexData.y >> vertexData.z;
+		modelDataFile >> vertexData.tu >> vertexData.tv;
+		modelDataFile >> vertexData.nx >> vertexData.ny >> vertexData.nz;
+		m_ModelData.push_back(vertexData);
+	}
+
+	//modelDataFile.close();
+
+	return true;
 }

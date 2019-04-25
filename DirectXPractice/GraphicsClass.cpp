@@ -86,7 +86,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	LOG_RETURN_IF_FALSE(m_Model != nullptr, "Could not create model class");
 
 	//Initialize the model class 
-	result = m_Model->Initialize(m_D3D->GetDevice(), L"flowers.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), "cube.txt", L"woodenpanel.dds");
 	HARDASSERT(result, "Could not initialize model class");
 
 	//Create the light shader
@@ -98,7 +98,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_Light = new LightClass();
 	HARDASSERT(m_Light != nullptr, "Unable to create light");
-	m_Light->SetDiffuseColor(1.0f, 0.0f, 1.0f, 1.0f);
+	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
 
 	//Create + Initialize texture shader
@@ -159,7 +159,7 @@ bool GraphicsClass::Frame()
 
 	static float angleOfRotation = 0.0f;
 
-	angleOfRotation += (float)D3DX_PI * 0.01f;
+	angleOfRotation += (float)D3DX_PI * 0.005f;
 	if (angleOfRotation > 360.0f)
 	{
 		angleOfRotation = 0.0f;

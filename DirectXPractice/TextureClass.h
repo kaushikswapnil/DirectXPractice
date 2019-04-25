@@ -12,7 +12,7 @@ public:
 	TextureClass(const TextureClass&);
 	~TextureClass();
 
-	bool Initialize(ID3D11Device*, WCHAR*);
+	bool Initialize(ID3D11Device* device, const WCHAR* fileName);
 	void Shutdown();
 
 	ID3D11ShaderResourceView* GetTexture();

@@ -100,7 +100,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	HARDASSERT(m_Light != nullptr, "Unable to create light");
     m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light->SetDirection(1.0f, 0.0f, 1.0f);
+    m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+    m_Light->GetSpecularPower(64.0f); //The lower the specular power, the higher the specular effect
 
 	//Create + Initialize texture shader
 	/*m_TextureShader = new TextureShaderClass;
@@ -208,7 +210,10 @@ bool GraphicsClass::Render(const float angleOfRotation)
 								m_Model->GetTexture(),
 								m_Light->GetDirection(),
                                 m_Light->GetAmbientColor(),
-                                m_Light->GetDiffuseColor());
+                                m_Light->GetDiffuseColor(),
+                                m_Camera->GetPosition(),
+                                m_Light->GetSpecularColor(),
+                                m_Light->GetSpecularPower());
 	if (!result)
 	{
 		return false;

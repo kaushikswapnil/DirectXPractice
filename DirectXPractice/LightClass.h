@@ -10,10 +10,16 @@ public:
 	void SetDirection(const float x, const float y, const float z) { m_Direction = D3DXVECTOR3(x, y, z); }
     const D3DXVECTOR4& GetAmbientColor() const { return m_AmbientColor; }
     void SetAmbientColor(const float red, const float green, const float blue, const float alpha) { m_AmbientColor = D3DXVECTOR4(red, green, blue, alpha); }
+    const D3DXVECTOR4& GetSpecularColor() const { return m_SpecularColor; }
+    void SetSpecularColor(const float red, const float green, const float blue, const float alpha) { m_SpecularColor = D3DXVECTOR4(red, green, blue, alpha); }
+    const float GetSpecularPower() const { return m_SpecularPower; }
+    void GetSpecularPower(float val) { m_SpecularPower = val; }
 
 private:
 	D3DXVECTOR4 m_DiffuseColor;
 	D3DXVECTOR3 m_Direction;
     D3DXVECTOR4 m_AmbientColor;
+    D3DXVECTOR4 m_SpecularColor;
+    float m_SpecularPower;
 };
 

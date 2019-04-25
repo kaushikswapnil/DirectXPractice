@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXPractice", "DirectXP
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Essentials", "..\Essentials\Essentials\Essentials.vcxproj", "{014E3313-E7FE-4DCF-A8EE-0298A3FA3818}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelFileParser", "ModelFileParser\ModelFileParser.vcxproj", "{17DE1732-E38A-4991-B1AF-B95A20AA57CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +36,14 @@ Global
 		{014E3313-E7FE-4DCF-A8EE-0298A3FA3818}.Release|x64.Build.0 = Release|x64
 		{014E3313-E7FE-4DCF-A8EE-0298A3FA3818}.Release|x86.ActiveCfg = Release|Win32
 		{014E3313-E7FE-4DCF-A8EE-0298A3FA3818}.Release|x86.Build.0 = Release|Win32
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Debug|x64.ActiveCfg = Debug|x64
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Debug|x64.Build.0 = Debug|x64
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Debug|x86.ActiveCfg = Debug|Win32
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Debug|x86.Build.0 = Debug|Win32
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Release|x64.ActiveCfg = Release|x64
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Release|x64.Build.0 = Release|x64
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Release|x86.ActiveCfg = Release|Win32
+		{17DE1732-E38A-4991-B1AF-B95A20AA57CD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

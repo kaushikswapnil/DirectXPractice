@@ -162,7 +162,7 @@ bool GraphicsClass::Frame()
 
 	static float angleOfRotation = 0.0f;
 
-	angleOfRotation += (float)D3DX_PI * 0.005f;
+	angleOfRotation += (float)D3DX_PI * 0.001f;
 	if (angleOfRotation > 360.0f)
 	{
 		angleOfRotation = 0.0f;

@@ -71,6 +71,8 @@ void OpenDestinationModelFile(std::ofstream& file)
 
 void ConvertSourceModelFileToSimpleFileFormat(std::ifstream& sourceFile, std::ofstream& destinationSimpleFile)
 {
+	HARDASSERT(sourceFile.is_open() && destinationSimpleFile.is_open(), "Source and destination files should be open at this moment");
+
 	std::vector<FaceType> faces;
 	std::vector<Float3> vertice, normals;
 	std::vector<Float2> textureCoordinates;
@@ -142,18 +144,47 @@ void ConvertSourceModelFileToSimpleFileFormat(std::ifstream& sourceFile, std::of
 			break;
 
 			default:
-			{
-				do
-				{ 
-					sourceFile.get(input);
-				} while (input != '\n'); //Read till the next line
-			}
 			break;
 		}
 
+		do
+		{
+			sourceFile.get(input);
+		} while (input != '\n'); //Read till the next line
 	}
 
-	//Display diagnostics
+	//Write to dest file
+	destinationSimpleFile << "Vertex Count: " << vertice.size() << std::endl << std::endl;
+	destinationSimpleFile << "Data:" << std::endl << std::endl;
+
+	for (const FaceType& face : faces)
+	{
+		unsigned int vIndex = face.vIndex1 - 1;
+		unsigned int tIndex = face.tIndex1 - 1;
+		unsigned int nIndex = face.nIndex1 - 1;
+
+		destinationSimpleFile << vertice[vIndex].x << ' ' << vertice[vIndex].y << ' ' << vertice[nIndex].z << ' '
+								<< textureCoordinates[tIndex].x << ' ' << textureCoordinates[tIndex].y << ' '
+								  << normals[nIndex].x << ' ' << normals[nIndex].y << ' ' << normals[nIndex].z << std::endl;
+
+		vIndex = face.vIndex2 - 1;
+		tIndex = face.tIndex2 - 1;
+		nIndex = face.nIndex2 - 1;
+
+		destinationSimpleFile << vertice[vIndex].x << ' ' << vertice[vIndex].y << ' ' << vertice[nIndex].z << ' '
+			<< textureCoordinates[tIndex].x << ' ' << textureCoordinates[tIndex].y << ' '
+			<< normals[nIndex].x << ' ' << normals[nIndex].y << ' ' << normals[nIndex].z << std::endl;
+
+		vIndex = face.vIndex3 - 1;
+		tIndex = face.tIndex3 - 1;
+		nIndex = face.nIndex3 - 1;
+
+		destinationSimpleFile << vertice[vIndex].x << ' ' << vertice[vIndex].y << ' ' << vertice[nIndex].z << ' '
+			<< textureCoordinates[tIndex].x << ' ' << textureCoordinates[tIndex].y << ' '
+			<< normals[nIndex].x << ' ' << normals[nIndex].y << ' ' << normals[nIndex].z << std::endl;
+	}
+
+	//Display stats
 	std::cout << "Vertices added : " << vertice.size() << std::endl;
 	std::cout << "Texture Coords added : " << textureCoordinates.size() << std::endl;
 	std::cout << "Normals added : " << normals.size() << std::endl;

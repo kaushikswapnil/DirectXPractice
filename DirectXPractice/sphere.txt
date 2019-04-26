@@ -1,4 +1,4 @@
-Vertex Count: 16022
+Vertex Count: 48060
 
 Data:
 

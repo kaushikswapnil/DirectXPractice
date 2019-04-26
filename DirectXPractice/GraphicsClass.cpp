@@ -86,7 +86,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	LOG_RETURN_IF_FALSE(m_Model != nullptr, "Could not create model class");
 
 	//Initialize the model class 
-	result = m_Model->Initialize(m_D3D->GetDevice(), "cube.txt", L"woodenpanel.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), "sphere.txt", L"RedTex.dds");
 	HARDASSERT(result, "Could not initialize model class");
 
 	//Create the light shader

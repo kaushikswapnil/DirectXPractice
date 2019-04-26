@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <Assertion.h>
+#include <vector>
 
 struct Float3
 {
@@ -71,35 +72,92 @@ void OpenDestinationModelFile(std::ofstream& file)
 void ConvertSourceModelFileToSimpleFileFormat(std::ifstream& sourceFile, std::ofstream& destinationSimpleFile)
 {
 	std::vector<FaceType> faces;
-	std::vector<Float3> vertices, normals;
+	std::vector<Float3> vertice, normals;
 	std::vector<Float2> textureCoordinates;
 
-	std::string input;
+	char input;
+	unsigned int vertexIndex = 0, tectureCoordIndex = 0, normalIndex = 0, faceIndex = 0;
 	while (!sourceFile.eof())
 	{
-		sourceFile >> input;
+		sourceFile.get(input);
 
 		//The first input for each line must be the line type specifier
 		switch (input)
 		{
 			case 'v':
 			{
-				Float3 vertice;
-				sourceFile >> vertice.x >> vertice.y >> vertice.z;
+				sourceFile.get(input);
+
+				switch (input)
+				{
+					case ' ': //Vertex
+					{
+						Float3 vertex;
+						sourceFile >> vertex.x >> vertex.y >> vertex.z;
+						vertex.z *= -1; //Invert the sign of the z vertex to turn this into a left handed coord system
+						vertice.push_back(vertex);
+					}
+					break;
+
+					case 'n': //Normals
+					{
+						Float3 normal;
+						sourceFile >> normal.x >> normal.y >> normal.z;
+						normal.z *= -1; //Invert the sign of the z vertex to turn this into a left handed coord system
+						normals.push_back(normal);
+					}
+					break;
+
+					case 't': //Texture
+					{
+						Float2 textureCoord;
+						sourceFile >> textureCoord.x >> textureCoord.y;
+						textureCoord.y = 1.0f - textureCoord.y; //Invert the v coord to left handed system
+						textureCoordinates.push_back(textureCoord);
+					}
+					break;
+
+					default:
+					SOFTASSERT(false, "Should not have an unhandled char here");
+					break;
+				}
+
+				
 			}
 			break;
+
+			case 'f': //Faces
+			{
+				sourceFile.get(input);
+				if (input == ' ')
+				{
+					//Read in back to front to ensure that coordinate system is converted
+					FaceType face;
+					sourceFile >> face.vIndex3 >> input >> face.tIndex3 >> input >> face.nIndex3
+								>> face.vIndex2 >> input >> face.tIndex2 >> input >> face.nIndex2
+								 >> face.vIndex1 >> input >> face.tIndex1 >> input >> face.nIndex1;
+					faces.push_back(face);
+				}
+			}
+			break;
+
 			default:
 			{
-				char c;
 				do
 				{ 
-					sourceFile.get(c);
-				} while (c != '\n'); //Read till the next line
+					sourceFile.get(input);
+				} while (input != '\n'); //Read till the next line
 			}
 			break;
 		}
 
 	}
+
+	//Display diagnostics
+	std::cout << "Vertices added : " << vertice.size() << std::endl;
+	std::cout << "Texture Coords added : " << textureCoordinates.size() << std::endl;
+	std::cout << "Normals added : " << normals.size() << std::endl;
+	std::cout << "Faces added : " << faces.size() << std::endl;
 }
 
 int main()
@@ -111,7 +169,7 @@ int main()
 
 	OpenDestinationModelFile(destinationModelFile);
 
-	ConvertSourceModelFileToSimpleFileFormat(sourceModelFile, destinationModelFile)
+	ConvertSourceModelFileToSimpleFileFormat(sourceModelFile, destinationModelFile);
 
 	sourceModelFile.close();
 	destinationModelFile.close();

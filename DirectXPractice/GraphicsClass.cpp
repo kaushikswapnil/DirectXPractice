@@ -80,13 +80,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	//Initialize a base view matrix with the camera for 2D UI rendering
-	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -8.0f);
 
 	m_Model = new ModelClass;
 	LOG_RETURN_IF_FALSE(m_Model != nullptr, "Could not create model class");
 
 	//Initialize the model class 
-	result = m_Model->Initialize(m_D3D->GetDevice(), "cube.txt", L"woodenpanel.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), "sphere.txt", L"crackedice.dds");
 	HARDASSERT(result, "Could not initialize model class");
 
 	//Create the light shader
@@ -100,7 +100,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	HARDASSERT(m_Light != nullptr, "Unable to create light");
     m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(1.0f, 0.0f, 0.0f);
+	m_Light->SetDirection(1.0f, 0.0f, 1.0f);
     m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
     m_Light->GetSpecularPower(32.0f); //The lower the specular power, the higher the specular effect
 

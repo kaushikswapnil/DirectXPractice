@@ -18,21 +18,12 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{d0ecfbfa-e641-4c1b-b52c-47fbedf65842}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GraphicObjects">
+      <UniqueIdentifier>{df1cb84a-121f-4cd4-9215-4c440a967657}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CameraClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BitmapClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ColorShaderClass.cpp">
@@ -65,20 +56,20 @@
     <ClCompile Include="LightShaderClass.cpp">
       <Filter>Source Files\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="BitmapClass.cpp">
+      <Filter>Source Files\GraphicObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelClass.cpp">
+      <Filter>Source Files\GraphicObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraClass.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="TextClass.cpp">
+      <Filter>Source Files\GraphicObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraClass.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelClass.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextClass.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BitmapClass.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="ColorShaderClass.h">
       <Filter>Source Files\Shaders</Filter>
     </ClInclude>
@@ -114,6 +105,18 @@
     </ClInclude>
     <ClInclude Include="LightClass.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapClass.h">
+      <Filter>Source Files\GraphicObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelClass.h">
+      <Filter>Source Files\GraphicObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraClass.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="TextClass.h">
+      <Filter>Source Files\GraphicObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

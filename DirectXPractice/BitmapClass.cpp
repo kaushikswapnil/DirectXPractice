@@ -15,7 +15,7 @@ BitmapClass::~BitmapClass()
 {
 }
 
-bool BitmapClass::Initialize(ID3D11Device *device, int screenWidth, int screenHeight, WCHAR * textureFileName, int bitmapWidth, int bitmapHeight)
+bool BitmapClass::Initialize(ID3D11Device* device, const int screenWidth, const int screenHeight, const WCHAR* tectureFilename, const int bitmapWidth, const int bitmapHeight)
 {
 	bool result;
 
@@ -40,7 +40,7 @@ bool BitmapClass::Initialize(ID3D11Device *device, int screenWidth, int screenHe
 	}
 
 	//load texture for the model
-	result = LoadTexture(device, textureFileName);
+	result = LoadTexture(device, tectureFilename);
 	if (!result)
 	{
 		return false;
@@ -57,7 +57,7 @@ void BitmapClass::Shutdown()
 	ShutdownBuffers();
 }
 
-bool BitmapClass::Render(ID3D11DeviceContext *deviceContext, int positionX, int positionY)
+bool BitmapClass::Render(ID3D11DeviceContext *deviceContext, const int positionX, const int positionY)
 {
 	bool result;
 
@@ -230,43 +230,43 @@ bool BitmapClass::UpdateBuffers(ID3D11DeviceContext *deviceContext, int position
 	}
 	//Load the vertex array with data
 	// First triangle.
-	//vertices[0].position = D3DXVECTOR3(left, top, 0.0f);  // Top left.
-	//vertices[0].texture = D3DXVECTOR2(0.0f, 0.0f);
-
-	//vertices[1].position = D3DXVECTOR3(right, bottom, 0.0f);  // Bottom right.
-	//vertices[1].texture = D3DXVECTOR2(1.0f, 1.0f);
-
-	//vertices[2].position = D3DXVECTOR3(left, bottom, 0.0f);  // Bottom left.
-	//vertices[2].texture = D3DXVECTOR2(0.0f, 1.0f);
-
-	//// Second triangle.
-	//vertices[3].position = D3DXVECTOR3(left, top, 0.0f);  // Top left.
-	//vertices[3].texture = D3DXVECTOR2(0.0f, 0.0f);
-
-	//vertices[4].position = D3DXVECTOR3(right, top, 0.0f);  // Top right.
-	//vertices[4].texture = D3DXVECTOR2(1.0f, 0.0f);
-
-	//vertices[5].position = D3DXVECTOR3(right, bottom, 0.0f);  // Bottom right.
-	//vertices[5].texture = D3DXVECTOR2(1.0f, 1.0f);
-
 	vertices[0].position = D3DXVECTOR3(left, top, 0.0f);  // Top left.
-	vertices[0].texture = D3DXVECTOR2(0.3679f, 0.1331f);
+	vertices[0].texture = D3DXVECTOR2(0.0f, 0.0f);
 
 	vertices[1].position = D3DXVECTOR3(right, bottom, 0.0f);  // Bottom right.
-	vertices[1].texture = D3DXVECTOR2(0.4245f, 0.1958f);
+	vertices[1].texture = D3DXVECTOR2(1.0f, 1.0f);
 
 	vertices[2].position = D3DXVECTOR3(left, bottom, 0.0f);  // Bottom left.
-	vertices[2].texture = D3DXVECTOR2(0.3679f, 0.1958f);
+	vertices[2].texture = D3DXVECTOR2(0.0f, 1.0f);
 
 	// Second triangle.
 	vertices[3].position = D3DXVECTOR3(left, top, 0.0f);  // Top left.
-	vertices[3].texture = D3DXVECTOR2(0.3679f, 0.1331f);
+	vertices[3].texture = D3DXVECTOR2(0.0f, 0.0f);
 
 	vertices[4].position = D3DXVECTOR3(right, top, 0.0f);  // Top right.
-	vertices[4].texture = D3DXVECTOR2(0.4245f, 0.1331f);
+	vertices[4].texture = D3DXVECTOR2(1.0f, 0.0f);
 
 	vertices[5].position = D3DXVECTOR3(right, bottom, 0.0f);  // Bottom right.
-	vertices[5].texture = D3DXVECTOR2(0.4245f, 0.1958f);
+	vertices[5].texture = D3DXVECTOR2(1.0f, 1.0f);
+
+	//vertices[0].position = D3DXVECTOR3(left, top, 0.0f);  // Top left.
+	//vertices[0].texture = D3DXVECTOR2(0.3679f, 0.1331f);
+
+	//vertices[1].position = D3DXVECTOR3(right, bottom, 0.0f);  // Bottom right.
+	//vertices[1].texture = D3DXVECTOR2(0.4245f, 0.1958f);
+
+	//vertices[2].position = D3DXVECTOR3(left, bottom, 0.0f);  // Bottom left.
+	//vertices[2].texture = D3DXVECTOR2(0.3679f, 0.1958f);
+
+	//// Second triangle.
+	//vertices[3].position = D3DXVECTOR3(left, top, 0.0f);  // Top left.
+	//vertices[3].texture = D3DXVECTOR2(0.3679f, 0.1331f);
+
+	//vertices[4].position = D3DXVECTOR3(right, top, 0.0f);  // Top right.
+	//vertices[4].texture = D3DXVECTOR2(0.4245f, 0.1331f);
+
+	//vertices[5].position = D3DXVECTOR3(right, bottom, 0.0f);  // Bottom right.
+	//vertices[5].texture = D3DXVECTOR2(0.4245f, 0.1958f);
 
 	//Now copy the contents of vertex array to the vertex buffer using Map and memcpy
 
@@ -313,7 +313,7 @@ void BitmapClass::RenderBuffers(ID3D11DeviceContext *deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-bool BitmapClass::LoadTexture(ID3D11Device *device, WCHAR *filename)
+bool BitmapClass::LoadTexture(ID3D11Device *device, const WCHAR *filename)
 {
 	bool result;
 	

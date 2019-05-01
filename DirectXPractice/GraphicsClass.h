@@ -41,8 +41,8 @@ private:
 
 	LightShaderClass* m_LightShader;
 	LightClass* m_Light;
-	//BitmapClass* m_Bitmap;
-	//TextureShaderClass* m_TextureShader;
+	BitmapClass* m_Bitmap;
+	TextureShaderClass* m_TextureShader;
 	//TextClass* m_Text;
 	//ColorShaderClass* m_ColorShader; //used for color shading
 };
